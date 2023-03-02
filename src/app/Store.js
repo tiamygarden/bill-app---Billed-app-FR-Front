@@ -69,4 +69,4 @@ class Store {
   bills = () => new ApiEntity({key: 'bills', api: this.api})
 }
 
-export default new Store()
+ export default new Store()
