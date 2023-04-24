@@ -61,3 +61,8 @@ textarea:focus, input:focus, select:focus {
 *[placeholder] {
     color: #0E5AE5 !important;
 }
+
+.text-warning-file {
+    color: rgb(223, 39, 39) !important;
+    font-weight: 600 !important;
+}

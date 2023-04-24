@@ -1,7 +1,7 @@
-import {formatDate} from '../app/format.js'
+import { formatDate } from '../app/format.js'
 import DashboardFormUI from '../views/DashboardFormUI.js'
 import BigBilledIcon from '../assets/svg/big_billed.js'
-import {ROUTES_PATH} from '../constants/routes.js'
+import { ROUTES_PATH } from '../constants/routes.js'
 import USERS_TEST from '../constants/usersTest.js'
 import Logout from "./Logout.js"
 
@@ -53,7 +53,7 @@ export const card = (bill) => {
 }
 
 export const cards = (bills) => {
-    return bills && bills.length ? bills.map((bill) => card(bill)).join("") : ""
+    return bills && bills.length ? bills.map(bill => card(bill)).join("") : ""
 }
 
 export const getStatus = (index) => {
@@ -68,41 +68,42 @@ export const getStatus = (index) => {
 }
 
 export default class {
-    constructor({document, onNavigate, store, bills, localStorage}) {
+    constructor({ document, onNavigate, store, bills, localStorage }) {
         this.document = document
         this.onNavigate = onNavigate
         this.store = store
-        $('#arrow-icon1').click((e) => this.handleShowTickets(e, bills, 1))
-        $('#arrow-icon2').click((e) => this.handleShowTickets(e, bills, 2))
-        $('#arrow-icon3').click((e) => this.handleShowTickets(e, bills, 3))
-        new Logout({localStorage, onNavigate})
+        $('#arrow-icon1').click((e) => { this.handleShowTickets(e, bills, 1) })
+        $('#arrow-icon2').click((e) => { this.handleShowTickets(e, bills, 2) })
+        $('#arrow-icon3').click((e) => { this.handleShowTickets(e, bills, 3) })
+        new Logout({ localStorage, onNavigate })
     }
 
     handleClickIconEye = () => {
         const billUrl = $('#icon-eye-d').attr("data-bill-url")
-        const imgWidth = Math.floor($('#modaleFileAdmin1').width() * 0.8)
+        const imgWidth = Math.floor($('#modaleFileAdmin1').width() * 0.5)
         $('#modaleFileAdmin1').find(".modal-body").html(`<div style='text-align: center;'><img width=${imgWidth} src=${billUrl} alt="Bill"/></div>`)
         if (typeof $('#modaleFileAdmin1').modal === 'function') $('#modaleFileAdmin1').modal('show')
     }
 
     handleEditTicket(e, bill, bills) {
+
         if (this.counter === undefined || this.id !== bill.id) this.counter = 0
         if (this.id === undefined || this.id !== bill.id) this.id = bill.id
         if (this.counter % 2 === 0) {
             bills.forEach(b => {
-                $(`#open-bill${b.id}`).css({background: '#0D5AE5'})
+                $(`#open-bill${b.id}`).css({ background: '#0D5AE5' })
             })
-            $(`#open-bill${bill.id}`).css({background: '#2A2B35'})
+            $(`#open-bill${bill.id}`).css({ background: '#2A2B35' })
             $('.dashboard-right-container div').html(DashboardFormUI(bill))
-            $('.vertical-navbar').css({height: '150vh'})
+            $('.vertical-navbar').css({ height: '150vh' })
             this.counter++
         } else {
-            $(`#open-bill${bill.id}`).css({background: '#0D5AE5'})
+            $(`#open-bill${bill.id}`).css({ background: '#0D5AE5' })
 
             $('.dashboard-right-container div').html(`
         <div id="big-billed-icon" data-testid="big-billed-icon"> ${BigBilledIcon} </div>
       `)
-            $('.vertical-navbar').css({height: '120vh'})
+            $('.vertical-navbar').css({ height: '120vh' })
             this.counter++
         }
         $('#icon-eye-d').click(this.handleClickIconEye)
@@ -131,28 +132,29 @@ export default class {
     }
 
     handleShowTickets(e, bills, index) {
-        if (this.counter === undefined || this.index !== index) this.counter = 0
-        if (this.index === undefined || this.index !== index) this.index = index
-        if (this.counter % 2 === 0) {
-            $(`#arrow-icon${this.index}`).css({transform: 'rotate(0deg)'})
-            $(`#status-bills-container${this.index}`)
-                .html(cards(filteredBills(bills, getStatus(this.index))))
-            this.counter++
+        const arrow = $(`#arrow-icon${index}`)[0];
+        const container = $(`#status-bills-container${index}`)[0];
+        arrow.classList.toggle("open-section");
+        if (arrow.classList.contains("open-section")) {
+            // it is opened.
+            $(arrow).css({ transform: "rotate(0deg)" });
+            if (container.hasChildNodes()) {
+                const fBills = filteredBills(bills, getStatus(index));
+                container.innerHTML = cards(fBills);
+                fBills.forEach(bill => {
+                    $(`#open-bill${bill.id}`).click(e =>
+                        this.handleEditTicket(e, bill, bills)
+                    );
+                });
+            }
+            container.style.display = "block";
         } else {
-            $(`#arrow-icon${this.index}`).css({transform: 'rotate(90deg)'})
-            $(`#status-bills-container${this.index}`)
-                .html("")
-            this.counter++
+            // it is closed
+            $(arrow).css({ transform: "rotate(90deg)" });
+            container.style.display = "none";
         }
-
-        bills.forEach(bill => {
-            $(`#open-bill${bill.id}`).off('click')
-            $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
-        })
-
-        return bills
-
     }
+
 
     getBillsAllUsers = () => {
         if (this.store) {
@@ -181,7 +183,7 @@ export default class {
         if (this.store) {
             return this.store
                 .bills()
-                .update({data: JSON.stringify(bill), selector: bill.id})
+                .update({ data: JSON.stringify(bill), selector: bill.id })
                 .then(bill => bill)
                 .catch(console.log)
         }

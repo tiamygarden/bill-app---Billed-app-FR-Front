@@ -108,7 +108,8 @@
 
 .dashboard-svg-container {
   position: absolute;
-  top: 40%; left: 50%;
+  top: 40%; 
+  left: 50%;
   transform: translate(-50%,-40%);
 }
 
@@ -116,4 +117,3 @@
   transform: rotate(90deg);
   cursor: pointer;
 }
-
